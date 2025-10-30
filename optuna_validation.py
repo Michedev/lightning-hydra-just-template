@@ -5,6 +5,7 @@ import yaml
 import os
 from pathlib import Path
 import re
+import argparse
 
 
 def objective(trial: optuna.Trial) -> float:
@@ -12,6 +13,7 @@ def objective(trial: optuna.Trial) -> float:
     Objective function for Optuna optimization.
     Suggests hyperparameters and runs training.
     """
+    raise NotImplementedError("This is the demo implementation for MLP, please adapt for your code")
     # Suggest hyperparameters
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-2, log=True)
     dropout = trial.suggest_float("dropout", 0.0, 0.5)
@@ -80,18 +82,28 @@ def main():
     """
     Main function to run Optuna optimization.
     """
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Optuna hyperparameter optimization")
+    parser.add_argument("--n-trials", type=int, default=50, help="Number of trials to run")
+    parser.add_argument("--study-name", type=str, default="mnist_optimization", help="Name of the Optuna study")
+    parser.add_argument("--storage", type=str, default="sqlite:///optuna_study.db", help="Database URL for study storage")
+    parser.add_argument("--n-startup-trials", type=int, default=5, help="Number of random trials before TPE")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility")
+    parser.add_argument("--timeout", type=int, default=None, help="Stop after this many seconds")
+    args = parser.parse_args()
+    
     # Create study with TPE sampler
     sampler = TPESampler(
-        seed=42,
+        seed=args.seed,
         multivariate=True,
-        n_startup_trials=5,  # Number of random trials before TPE kicks in
+        n_startup_trials=args.n_startup_trials,
     )
     
     study = optuna.create_study(
-        study_name="mnist_optimization",
+        study_name=args.study_name,
         direction="maximize",  # Maximize val/acc
         sampler=sampler,
-        storage="sqlite:///optuna_study.db",  # Persist study to database
+        storage=args.storage,
         load_if_exists=True,
     )
     
@@ -101,15 +113,16 @@ def main():
     print(f"Study name: {study.study_name}")
     print(f"Sampler: {type(sampler).__name__}")
     print(f"Direction: maximize val/acc")
+    print(f"Number of trials: {args.n_trials}")
+    print(f"Storage: {args.storage}")
     print("="*80)
     
     # Run optimization
-    n_trials = 50  # Number of trials to run
-    
     try:
         study.optimize(
             objective,
-            n_trials=n_trials,
+            n_trials=args.n_trials,
+            timeout=args.timeout,
             show_progress_bar=True,
             n_jobs=1,  # Run trials sequentially
         )

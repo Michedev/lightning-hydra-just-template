@@ -1,4 +1,4 @@
-_target_: your_codebase.model.mlp.MLPModel
+_target_: src.model.mlp.MLPModel
 
 input_size: 784  # e.g., for MNIST 28x28 flattened
 hidden_sizes: [256, 128, 64]

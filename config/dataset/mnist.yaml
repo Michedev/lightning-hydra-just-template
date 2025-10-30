@@ -1,11 +1,11 @@
 train:
-  _target_: your_codebase.dataset.mnist.FlattenedMNIST
+  _target_: src.dataset.mnist.FlattenedMNIST
   root: ./data
   train: true
   download: true
 
 test:
-  _target_: your_codebase.dataset.mnist.FlattenedMNIST
+  _target_: src.dataset.mnist.FlattenedMNIST
   root: ./data
   train: false
   download: true

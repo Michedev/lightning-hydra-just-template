@@ -25,12 +25,16 @@ train:
     conda run -n {{env_name}} python train.py model=mlp
 
 # Run Optuna hyperparameter optimization
-optimize:
-    conda run -n {{env_name}} python optuna_mlp_validation.py
+optimize TRIALS="50":
+    conda run -n {{env_name}} python optuna_mlp_validation.py --n-trials={{TRIALS}}
 
 # Continue an existing Optuna study with additional trials
 optimize-continue TRIALS="50":
     conda run -n {{env_name}} python optuna_mlp_validation.py --n-trials={{TRIALS}}
+
+# Run optimization with custom parameters
+optimize-custom *ARGS:
+    conda run -n {{env_name}} python optuna_mlp_validation.py {{ARGS}}
 
 python *ARGS:
     conda run -n {{env_name}} --live-stream python {{ARGS}}
