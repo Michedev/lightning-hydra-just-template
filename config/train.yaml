@@ -8,10 +8,9 @@ defaults:
 # General parameters
 seed: 42
 max_epochs: 1000
-checkpoint_dir: checkpoints
-checkpoint_every: 5
+tracked_metric: ???  # metric used for checkpoint
+tracked_metric_mode: ???  # min or max
 batch_size: 64
-ckpt_path: null
 validate_only: false
 
 

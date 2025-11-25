@@ -1,0 +1,25 @@
+# PyTorch Lightning Trainer configuration
+_target_: pytorch_lightning.Trainer
+max_epochs: 50
+accelerator: "gpu"  # Options: "cpu", "gpu", "tpu"
+devices: 1  # Number of devices to use
+log_every_n_steps: 1
+gradient_clip_val: null
+gradient_clip_algorithm: "norm"
+precision: 16  # Options: 32, 16, "bf16"
+deterministic: false
+check_val_every_n_epoch: 10 # modified by me because maad is very small dataset
+# Callbacks configuration
+callbacks:
+  - _target_: pytorch_lightning.callbacks.ModelCheckpoint
+    dirpath: checkpoints
+    filename: "${get_fname:${model._target_}}-{epoch:02d}-{${tracked_metric}}"
+    auto_insert_metric_name: ${has_not_slash:${tracked_metric}}
+    save_top_k: 3
+    every_n_epochs: 5
+    monitor: ${tracked_metric}
+    mode: ${tracked_metric_mode}
+    save_last: true
+
+  - _target_: pytorch_lightning.callbacks.LearningRateMonitor
+    logging_interval: "epoch"
